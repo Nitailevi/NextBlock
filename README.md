@@ -1,17 +1,44 @@
 # NextBlock
 
-This project now lives at:
+NextBlock is an ADHD-friendly planning app designed to reduce overwhelm, surface the real `now`, and make daily planning feel calmer and more believable.
 
-- `frontend/` - React + Vite planner UI
-- `backend/` - lightweight local API server on `http://localhost:8080`
-- `ai-service/` - AI microservice for planning suggestions, coaching, and smart arrange support on `http://localhost:8090`
+It combines:
+- a React + Vite frontend
+- a lightweight local planner backend
+- a separate AI-ready coaching service
+- a local-first/offline-capable PWA path
+- a Capacitor iPhone app wrapper path
 
-## Run it
+## What It Does
 
-Both together:
+- Shows the current task first, then the rest of the day in order
+- Supports day, week, and month planning
+- Lets users add recurring rules with constraints like time, energy, motivation, difficulty, and importance
+- Includes `Get unstuck` logic with structured support and built-in fallback coaching
+- Celebrates completed tasks and tracks wins
+- Falls back to local planner data when backend services are unavailable
+
+## Project Structure
+
+- `frontend/` - React + Vite app, PWA assets, and Capacitor iOS project
+- `backend/` - local task/planning API on `http://localhost:8080`
+- `ai-service/` - AI/planning microservice on `http://localhost:8090`
+- `run-dev.sh` - local convenience launcher
+
+## Run Locally
+
+Everything:
 
 ```bash
 ./run-dev.sh
+```
+
+Frontend:
+
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
 Backend:
@@ -28,29 +55,24 @@ cd ai-service
 npm start
 ```
 
-Frontend:
+## GitHub / CI
 
-```bash
-cd frontend
-npm run dev
-```
+This repo now includes CI to validate the main app build and basic service syntax on push and pull request.
 
-## Standalone App Paths
+The workflow lives at:
 
-If you want NextBlock to keep working without your computer being on, use one of these:
+- `.github/workflows/ci.yml`
 
-1. Deploy the `frontend` to a real HTTPS host
-2. Build the iPhone app wrapper from the Capacitor project
+## Deploy As A Hosted PWA
 
-The app is already local-first, so once hosted or packaged, it can keep using saved planner data and the built-in coach without depending on your Mac.
+If you want the app to open on iPhone without your computer being on, the strongest web path is to host the frontend over HTTPS.
 
-## Deploy The PWA
-
-The frontend is ready for static hosting and includes:
+The frontend is ready for static deployment and includes:
 
 - `frontend/vercel.json`
 - `frontend/netlify.toml`
-- PWA manifest and service worker
+- `frontend/public/manifest.webmanifest`
+- `frontend/public/sw.js`
 
 Build it:
 
@@ -60,25 +82,28 @@ npm install
 npm run build
 ```
 
-Then deploy `frontend/dist` or connect the `frontend` folder to a host like Vercel or Netlify.
+Then deploy the `frontend` app to a host like Vercel or Netlify.
 
-Recommended production env vars if you later host backend services too:
+Production env vars, if you later host backend services too:
 
 ```bash
 VITE_API_BASE_URL=https://YOUR-BACKEND/api/task-blocks
 VITE_AI_SERVICE_URL=https://YOUR-AI-SERVICE/api/ai
 ```
 
-If you do not host the backend or AI service, the app still works in local-first mode with built-in planning and unstuck fallbacks.
+If you do not host backend or AI services, NextBlock still works in local-first mode with built-in planner and unstuck fallbacks.
 
-## iPhone App With Capacitor
+## Build As A Real iPhone App
 
-The iOS wrapper is now scaffolded at:
+The iPhone app wrapper is already scaffolded with Capacitor.
 
-- `frontend/ios`
-- Xcode project: `frontend/ios/App/App.xcodeproj`
+Important files:
 
-Setup and sync:
+- `frontend/capacitor.config.ts`
+- `frontend/ios/`
+- `frontend/ios/App/App.xcodeproj`
+
+Sync the web app into the native shell:
 
 ```bash
 cd frontend
@@ -86,7 +111,7 @@ npm install
 npm run cap:sync
 ```
 
-Open in Xcode:
+Open the iOS project in Xcode:
 
 ```bash
 cd frontend
@@ -99,42 +124,44 @@ Or directly:
 open ios/App/App.xcodeproj
 ```
 
-From Xcode you can run it on:
+From Xcode:
 
-- an iPhone simulator
-- your physical iPhone
-
-Once built that way, it no longer depends on your Mac staying on just to launch.
-
-## Notes
-
-- The backend persists task blocks to `backend/data/task-blocks.json`
-- The AI service can run in `local` mode or `openai` mode
-- The frontend talks to `http://localhost:8080/api/task-blocks` by default
-- The AI service endpoints live under `http://localhost:8090/api/ai`
-- You can override the frontend API base with `VITE_API_BASE_URL`
-- For OpenAI-backed AI responses, set `AI_PROVIDER=openai` and `OPENAI_API_KEY`
+1. Select the `App` target
+2. Open `Signing & Capabilities`
+3. Choose your Apple ID team
+4. Let Xcode manage signing
+5. Run on simulator or your physical iPhone
 
 ## Local iPhone Testing
 
-- The frontend is now PWA-ready, with a manifest, service worker, and Apple touch icon
-- Backend and AI service now bind to `0.0.0.0` by default so your phone can reach them on the same Wi‑Fi network
-- The frontend API defaults follow the current hostname, so opening the app from your Mac's LAN IP will point the phone at the right backend and AI service
+For same-network testing from your Mac:
 
-For local phone testing:
+1. Start the local services
+2. Open the frontend from your Mac's LAN IP
+3. Add it to Home Screen from Safari
 
-1. Start everything with:
-
-```bash
-./run-dev.sh
-```
-
-2. Find your Mac's local IP address and open:
+Example:
 
 ```text
 http://YOUR-MAC-IP:5173
 ```
 
-3. In Safari on iPhone, use Share -> Add to Home Screen
+This is good for testing, but true standalone iPhone use is better through:
 
-For the most reliable installable-app experience, deploy the frontend over HTTPS. iPhone Home Screen apps work best when the site is hosted securely.
+- hosted HTTPS deployment, or
+- the Capacitor iPhone app
+
+## Notes
+
+- Backend data is stored locally in `backend/data/task-blocks.json`
+- AI service can run in heuristic mode or OpenAI-backed mode
+- OpenAI-backed mode uses:
+  - `AI_PROVIDER=openai`
+  - `OPENAI_API_KEY=...`
+- The app now includes local planner and local AI fallbacks, so core flows stay usable when services are down
+
+## Repo
+
+GitHub:
+
+- `https://github.com/Nitailevi/NextBlock`
