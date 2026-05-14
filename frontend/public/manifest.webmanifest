@@ -1,0 +1,21 @@
+{
+  "name": "NextBlock",
+  "short_name": "NextBlock",
+  "description": "ADHD-friendly planning with smart arranging, coaching, and momentum support.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff8ef",
+  "theme_color": "#f97316",
+  "icons": [
+    {
+      "src": "/app-icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/app-icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
